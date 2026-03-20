@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SrijanMart Grocery | Fresh & Organic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2e7d32; /* Grocery Green */
+            --secondary: #616161;
+            --dark: #1b5e20;
+            --light-bg: #f1f8e9;
+            --accent: #ffa000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #ffffff; color: #333; overflow-x: hidden; }
+
+        /* Navigation */
+        nav {
+            background: rgb(249, 245, 245);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4%;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+        .nav-icons { display: flex; gap: 20px; align-items: center; }
+        .icon-btn { cursor: pointer; position: relative; font-size: 12px; font-weight: 600; }
+        .badge { background: var(--accent); color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; position: absolute; top: -10px; right: -5px; }
+
+        /* Hero Slider */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            background: var(--light-bg);
+        }
+        .slider { display: flex; transition: transform 0.5s ease-in-out; height: 100%; }
+        .slide {
+            min-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 8%;
+        }
+        .slide-content h1 { font-size: 2.5rem; color: var(--dark); }
+        .slide-content span { color: var(--primary); }
+        .slide img { height: 280px; object-fit: contain; }
+
+        /* Filters */
+        .filters { display: flex; justify-content: center; gap: 10px; margin: 25px 0; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; }
+
+        /* Product Grid */
+        .container { padding: 0 4% 50px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .card { border: 1px solid #eee; transition: 0.3s; position: relative; border-radius: 8px; text-align: center; padding-bottom: 15px; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 180px; object-fit: contain; padding: 10px; }
+        
+        .wishlist-icon { position: absolute; top: 10px; right: 10px; cursor: pointer; color: #ccc; font-size: 20px; }
+        .wishlist-icon.active { color: #e91e63; }
+
+        .card-body { padding: 10px; }
+        .brand { font-size: 12px; color: var(--primary); font-weight: 700; text-transform: uppercase; }
+        .name { font-weight: 600; font-size: 15px; margin: 5px 0; }
+        .price { font-weight: 700; color: #000; }
+        .old-price { text-decoration: line-through; color: #888; font-size: 12px; }
+
+        .btn-buy { 
+            width: 85%; background: var(--primary); color: white; border: none; 
+            padding: 10px; cursor: pointer; font-weight: 600; border-radius: 5px; 
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; right: -100%; top: 0; width: 350px; height: 100%;
+            background: white; z-index: 2000; transition: 0.4s; padding: 20px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        }
+        .sidebar.active { right: 0; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; }
+
+        /* Payment */
+        .payment-modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 25px; border-radius: 12px; z-index: 3000; width: 90%; max-width: 380px;
+        }
+
+        .footer {
+    background: #fafafa;
+    color: #0a0a0a;
+    padding: 40px 20px 10px;
+    margin-top: 50px;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.footer-col h2,
+.footer-col h3 {
+    margin-bottom: 10px;
+}
+
+.footer-col p {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-col ul li {
+    margin-bottom: 8px;
+}
+
+.footer-col ul li a {
+    color: #000000;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.footer-col ul li a:hover {
+    color: #000000;
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #000000;
+    margin-top: 20px;
+    padding-top: 10px;
+    font-size: 14px;
+}
+
+.qr-code {
+    margin-top: 10px;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    background: #fff;
+    padding: 5px;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<nav>
+    <a href="#" class="logo">🌿 SabziMandi Online</a>
+    <div class="nav-icons">
+        <div class="icon-btn" onclick="openSidebar('wishlist')">❤ WISHLIST <span class="badge" id="wish-count">0</span></div>
+        <div class="icon-btn" onclick="openSidebar('cart')">🛒 MY CART <span class="badge" id="cart-count">0</span></div>
+    </div>
+</nav>
+
+<div class="slider-container">
+    <div class="slider" id="mainSlider">
+        <div class="slide">
+            <div class="slide-content">
+                <h1>FRESH <br> <span>VEGETABLES</span></h1>
+                <p>Direct from Farms | 100% Organic</p>
+            </div>
+            <img src="https://www.maggi.co.uk/sites/default/files/fruits-and-vegetables.jpg" alt="Fresh Veg">
+        </div>
+        <div class="slide" style="background:#fff9c4">
+            <div class="slide-content">
+                <h1>HEALTHY <br> <span>FRUIT BASKET</span></h1>
+                <p>Flat 20% OFF on Seasonal Fruits</p>
+            </div>
+            <img src="https://www.diagnosisdiet.com/assets/images/7/fruit-og-jcnp4h14m2mh5t9.jpg" alt="Fruits">
+        </div>
+
+        <!-- Slide 3 -->
+<div class="slide" style="background:#d3dce2">
+    <div class="slide-content">
+        <h1>FRESH <br> <span>DAIRY PRODUCTS</span></h1>
+        <p>Milk, Paneer & Butter | Daily Fresh</p>
+    </div>
+    <img src="https://www.chanakyadairy.com/wp-content/uploads/2019/04/blog-pic.jpg">
+</div>
+
+<!-- Slide 4 -->
+<div class="slide" style="background:#fce4ec">
+    <div class="slide-content">
+        <h1>SWEET <br> <span>CHOCOLATES</span></h1>
+        <p>Best Deals on Premium Chocolates</p>
+    </div>
+    <img src="https://media.istockphoto.com/id/504222480/photo/candies-chocolates-sweets.jpg?s=612x612&w=0&k=20&c=3Oy6PdL31qWUvFNq6Ri0FIUty4m3OrGCTJfPOjk28qU=">
+</div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterData('All')">All Items</button>
+    <button class="filter-btn" onclick="filterData('Vegetables')">Vegetables</button>
+    <button class="filter-btn" onclick="filterData('Fruits')">Fruits</button>
+    <button class="filter-btn" onclick="filterData('Staples')">Rice, Atta & Dal</button>
+    <button class="filter-btn" onclick="filterData('Chocolates')">Chocolates</button>
+    <button class="filter-btn" onclick="filterData('Dairy')">Dairy</button>
+    <button class="filter-btn" onclick="filterData('Care')">Personal Care</button>
+    
+    
+    </div>
+    <div class="grid" id="product-grid"></div>
+</div>
+
+<div class="sidebar" id="wishlist-sidebar">
+    <h2>My Favorites</h2><hr><br>
+    <div id="wishlist-items"></div>
+</div>
+
+<div class="sidebar" id="cart-sidebar">
+    <h2>My Shopping Bag</h2><hr><br>
+    <div id="cart-items"></div>
+    <div style="margin-top:20px; border-top:2px solid var(--light-bg); padding-top:15px;">
+        <strong>Total Payable: ₹<span id="total-price">0</span></strong>
+    </div><br>
+    <button class="btn-buy" style="width:100%" onclick="openPayment()">PROCEED TO CHECKOUT</button>
+</div>
+
+<div class="payment-modal" id="payment-modal">
+    <h3>Checkout Information</h3><br>
+    <p>Select Payment Mode:</p><br>
+    <div onclick="processPayment()" style="border:1px solid #ddd; padding:10px; margin-bottom:10px; cursor:pointer; border-radius:5px">💳 Online Payment (UPI/Card)</div>
+    <div onclick="processPayment()" style="border:1px solid #ddd; padding:10px; cursor:pointer; border-radius:5px">💵 Cash on Delivery</div>
+</div>
+
+<script>
+    const products = [
+        
+    // Vegetables  (पुराने आइटम्स)
+        { id: 1, cat: "Vegetables", brand: "Farm Fresh", name: "Fresh Tomato (1kg)", price: 40, oldPrice: 60, img: "https://www.pngall.com/wp-content/uploads/2016/04/Tomato-PNG-File.png" },
+        { id: 5, cat: "Vegetables", brand: "Farm Fresh", name: "Potato / Aloo (1kg)", price: 25, oldPrice: 40, img: "https://static.toiimg.com/photo/60794663.cms" },
+        { id: 6, cat: "Vegetables", brand: "Farm Fresh", name: "Cauliflower / Phool Gobhi (1pc)", price: 30, oldPrice: 50, img: "https://suttindseeds.in/wp-content/uploads/2022/07/Cauliflower-3.jpg" },
+        { id: 7, cat: "Vegetables", brand: "Farm Fresh", name: "Cabbage / Patta Gobhi (1pc)", price: 25, oldPrice: 40, img: "https://m.media-amazon.com/images/I/51j2Mw9YqOL._AC_UF1000,1000_QL80_.jpg" },
+        { id: 8, cat: "Vegetables", brand: "Farm Fresh", name: "Carrot / Gajar (1kg)", price: 50, oldPrice: 70, img: "https://bombayseeds.com/cdn/shop/files/Carrot.jpg?v=1729228037" },
+        { id: 9, cat: "Vegetables", brand: "Farm Fresh", name: "Green Chilli / Hari Mirch (250g)", price: 20, oldPrice: 30, img: "https://beejwala.com/cdn/shop/files/ChilliF1HariMirchBeejwala_800x.png?v=1701956022" },
+        { id: 10, cat: "Vegetables", brand: "Farm Fresh", name: "Brinjal / Baingan (1kg)", price: 45, oldPrice: 60, img: "https://dookan.com/cdn/shop/files/1go4u-MzbGRKxbhOAio6CTpmG6pVbV-Zf_b1c6b40d-1727-4346-b715-c39327f365b9.png?v=1724720747&width=1445" },
+        { id: 11, cat: "Vegetables", brand: "Farm Fresh", name: "Capsicum / Shimla Mirch (500g)", price: 60, oldPrice: 80, img: "https://beejwala.com/cdn/shop/products/green-capsicum-1_compressed.jpg?v=1653826565" },
+        { id: 12, cat: "Vegetables", brand: "Farm Fresh", name: "Spinach / Palak (1 bunch)", price: 20, oldPrice: 30, img: "https://nurserynisarga.in/wp-content/uploads/2021/10/elianna-friedman-4jpNPu7IW8k-unsplash.jpg" },
+        { id: 13, cat: "Vegetables", brand: "Farm Fresh", name: "Bottle Gourd / Lauki (1pc)", price: 35, oldPrice: 50, img: "https://static.toiimg.com/thumb/msid-117627857,width-1280,height-720,resizemode-4/117627857.jpg" },
+        { id: 14, cat: "Vegetables", brand: "Farm Fresh", name: "Bitter Gourd / Karela (500g)", price: 40, oldPrice: 60, img: "https://drvaidji.com/cdn/shop/articles/Bitter_Melon_1024x1024_37ab9838-93f6-4c88-83b4-508443174b78.jpg?v=1699514225" },
+        { id: 4, cat: "Vegetables", brand: "Farm Fresh", name: "Onion / Pyaaz (1kg)", price: 35, oldPrice: 50, img: "https://m.media-amazon.com/images/I/51WsZfYBn4L._AC_UF1000,1000_QL80_.jpg" },
+        { id: 15, cat: "Vegetables", brand: "Farm Fresh", name: "Coriander / Dhaniya (1 bunch)", price: 15, oldPrice: 25, img: "https://www.greendna.in/cdn/shop/products/corinder_leaves_732x.jpg?v=1559416353" },
+        { id: 16, cat: "Vegetables", brand: "Farm Fresh", name: "Ginger / Adrak (250g)", price: 40, oldPrice: 60, img: "https://static.wixstatic.com/media/f0a802_e097385448584bee805b8f84f2ad1636~mv2.webp/v1/fill/w_480,h_534,al_c,lg_1,q_80,enc_avif,quality_auto/f0a802_e097385448584bee805b8f84f2ad1636~mv2.webp" },
+        { id: 17, cat: "Vegetables", brand: "Farm Fresh", name: "Garlic / Lahsun (250g)", price: 45, oldPrice: 65, img: "https://m.media-amazon.com/images/I/610oDCL0XVL._AC_UF894,1000_QL80_.jpg" },
+
+{ id: 18, cat: "Vegetables", brand: "Farm Fresh", name: "Mint / Pudina (1 bunch)", price: 10, oldPrice: 20, img: "https://www.jiomart.com/images/product/original/590000532/mint-leaves-1-bunch-approx-80-g-130-g-product-images-o590000532-p590000532-0-202506101652.jpg?im=Resize=(1000,1000)" },
+
+{ id: 19, cat: "Vegetables", brand: "Farm Fresh", name: "Cucumber / Kheera (1kg)", price: 30, oldPrice: 45, img: "https://img.cdnx.in/165189/SKU-0303_0-1727235717192.jpg?width=600&format=webp" },
+
+{ id: 20, cat: "Vegetables", brand: "Farm Fresh", name: "Radish / Mooli (1kg)", price: 25, oldPrice: 40, img: "https://m.media-amazon.com/images/I/71voBsFjb0L._AC_UF1000,1000_QL80_.jpg" },
+
+{ id: 21, cat: "Vegetables", brand: "Farm Fresh", name: "Lady Finger / Bhindi (500g)", price: 35, oldPrice: 50, img: "https://m.media-amazon.com/images/I/51yvxGKCiYL.jpg" },
+
+{ id: 22, cat: "Vegetables", brand: "Farm Fresh", name: "Peas / Matar (500g)", price: 60, oldPrice: 80, img: "https://onlyhydroponics.in/cdn/shop/products/green-peas-320.jpg?v=1671598717" },
+
+{ id: 23, cat: "Vegetables", brand: "Farm Fresh", name: "Sweet Corn (2 pcs)", price: 40, oldPrice: 60, img: "https://www.onezeros.in/cdn/shop/products/sweet-corn-2-pcs-onezeros-in-35305131868358.jpg?v=1722140650" },
+
+        
+
+  // Fruits (पुराने आइटम्स)      
+{ id: 5, cat: "Fruits", brand: "Imported", name: "Red Apple (1kg)", price: 180, oldPrice: 220, img: "https://orchardsbox.com/cdn/shop/files/Red_Delicious.png?v=1758225097" },
+
+{ id: 6, cat: "Fruits", brand: "Fresh", name: "Mango / Aam (1kg)", price: 120, oldPrice: 150, img: "https://organicagroindia.com/wp-content/uploads/2021/07/mango.png" },
+
+{ id: 7, cat: "Fruits", brand: "Fresh", name: "Orange / Santra (1kg)", price: 80, oldPrice: 100, img: "https://plantsguru.com/cdn/shop/files/plantsguru-fruitplants-orange.jpg?v=1735618373" },
+
+{ id: 8, cat: "Fruits", brand: "Fresh", name: "Grapes / Angoor (500g)", price: 70, oldPrice: 90, img: "https://5.imimg.com/data5/HT/IW/PT/SELLER-25669864/grapes-angoor-live-plant-500x500.jpg" },
+
+{ id: 9, cat: "Fruits", brand: "Fresh", name: "Pineapple (1pc)", price: 90, oldPrice: 120, img: "https://5aday.co.nz/assets/site/fruit-and-vegetables/_articleHero/Pineapple.jpg" },
+
+{ id: 10, cat: "Fruits", brand: "Fresh", name: "Papaya (1kg)", price: 50, oldPrice: 70, img: "https://img.lb.wbmdstatic.com/vim/live/webmd/consumer_assets/site_images/article_thumbnails/other/papaya_and_mango_other/1800x1200_papaya_and_mango_other.jpg?resize=750px:*&output-quality=75" },
+
+{ id: 11, cat: "Fruits", brand: "Fresh", name: "Watermelon (1pc)", price: 60, oldPrice: 80, img: "https://hips.hearstapps.com/hmg-prod/images/fresh-ripe-watermelon-slices-on-wooden-table-royalty-free-image-1684966820.jpg?crop=0.88973xw:1xh;center,top&resize=1200:*" },
+
+{ id: 12, cat: "Fruits", brand: "Imported", name: "Strawberry (250g)", price: 140, oldPrice: 180, img: "https://freshindiaorganics.com/cdn/shop/files/Untitleddesign_14_12eef1de-8530-4b24-bd2e-668f871e6721.png?v=1701772054" },
+
+        // Dairy (पुराने आइटम्स)
+        { id: 3, cat: "Dairy", brand: "Amul", name: "Fresh Paneer (200g)", price: 95, oldPrice: 110, img: "https://www.parsidairyfarm.com/cdn/shop/files/PaneerTexture.jpg?v=1751373463" },
+        { id: 6, cat: "Dairy", brand: "Amul", name: "Fresh Milk (1L)", price: 66, oldPrice: 68, img: "https://img.freepik.com/free-photo/pitcher-with-some-milk_93675-128649.jpg?semt=ais_hybrid&w=740&q=80" },
+
+// More Dairy Products
+{ id: 20, cat: "Dairy", brand: "Amul", name: "Butter (500g)", price: 250, oldPrice: 280, img: "https://cdn.britannica.com/27/122027-050-EAA86783/Butter.jpg" },
+
+{ id: 21, cat: "Dairy", brand: "Mother Dairy", name: "Curd / Dahi (500g)", price: 40, oldPrice: 50, img: "https://www.shrinathdham.com/wp-content/uploads/2019/01/CURD-DAHI-YOGURT.jpg" },
+
+{ id: 22, cat: "Dairy", brand: "Amul", name: "Cheese Slices (200g)", price: 135, oldPrice: 150, img: "https://newsite.spinneyfields.com/wp-content/uploads/2020/02/Twice-graded-Cheese-Slices.jpg" },
+
+{ id: 23, cat: "Dairy", brand: "Nestle", name: "Milk Powder (400g)", price: 320, oldPrice: 350, img: "https://purensoselect.in/cdn/shop/products/100-goat-milk-powder-661.webp?v=1745929503" },
+
+{ id: 24, cat: "Dairy", brand: "Amul", name: "Lassi (1L)", price: 70, oldPrice: 80, img: "https://pipingpotcurry.com/wp-content/uploads/2021/05/Lassi-in-a-glass.jpg" },
+
+// Chocolates 🍫
+{ id: 25, cat: "Chocolates", brand: "Cadbury", name: "Dairy Milk (100g)", price: 90, oldPrice: 100, img: "https://fbflowerbasket.com/wp-content/uploads/2023/11/5-Cadbury-Dairy-Milk-Chcolates-13.2-gms.jpg" },
+
+{ id: 26, cat: "Chocolates", brand: "Cadbury", name: "5 Star (40g)", price: 30, oldPrice: 35, img: "https://www.grabchoice.com/image/cache/catalog/products/chocolate/cadbury-5-star-chocolate-india-tangy-shop-tangy-shop-620235%20(1)-1080x1080.png" },
+
+{ id: 27, cat: "Chocolates", brand: "Nestle", name: "KitKat (4 Finger)", price: 50, oldPrice: 60, img: "https://www.kitkat.co.uk/sites/default/files/styles/webp/public/2025-11/kitkat_tablets_no_new.png.webp?itok=WxNf4cB2" },
+
+{ id: 28, cat: "Chocolates", brand: "Mars", name: "Snickers Bar", price: 55, oldPrice: 65, img: "https://pudgefactor.com/wp-content/uploads/2024/09/IMG_4041.jpg" },
+
+{ id: 29, cat: "Chocolates", brand: "Ferrero Rocher", name: "Chocolate Box (16 pcs)", price: 850, oldPrice: 950, img: "https://www.jiomart.com/images/product/original/rvquesvjdv/ferrero-rocher-box-of-16-pieces-truffles-16-x-12-5-g-product-images-orvquesvjdv-p594302837-0-202301272318.jpg?im=Resize=(420,420)" },
+
+{ id: 30, cat: "Chocolates", brand: "Cadbury", name: "Silk Chocolate (150g)", price: 160, oldPrice: 180, img: "https://www.onlinedelivery.in/images/detailed/31/Silk-Chocolates.jpg" },
+
+{ id: 31, cat: "Chocolates", brand: "Cadbury", name: "Perk (2 Finger)", price: 20, oldPrice: 25, img: "https://5.imimg.com/data5/SELLER/Default/2025/7/524206859/ZK/OA/CV/38007068/0h2o5dmxuf9rolu9dhn4qakqqulfvfyysln5p354-250x250.jpg" },
+
+{ id: 32, cat: "Chocolates", brand: "Nestle", name: "Munch Wafer Roll", price: 25, oldPrice: 30, img: "https://www.bbassets.com/media/uploads/p/l/30007916_2-champion-gold-wafer-roll-chocolaty-fillings.jpg" },
+
+{ id: 33, cat: "Chocolates", brand: "Nestle", name: "Milkybar White Chocolate", price: 40, oldPrice: 50, img: "https://gulfmarket.in/admin8891450001/uploadimg/17687991565315final_milkybar_1x1_under_500kb.jpg.jpg" },
+
+{ id: 34, cat: "Chocolates", brand: "Mars", name: "Mars Chocolate Bar", price: 60, oldPrice: 70, img: "https://rukminim2.flixcart.com/image/480/480/kxgfzbk0/chocolate/a/z/i/24-imported-chocolate-24-mars-original-imag9wr3tqz4qzn9.jpeg?q=90" },
+
+{ id: 35, cat: "Chocolates", brand: "Hershey's", name: "Chocolate Syrup (200g)", price: 120, oldPrice: 150, img: "https://m.media-amazon.com/images/I/71TX9LZc00L._AC_UF1000,1000_QL80_.jpg" },
+
+{ id: 36, cat: "Chocolates", brand: "Kinder", name: "Kinder Joy (20g)", price: 50, oldPrice: 60, img: "https://tiimg.tistatic.com/fp/1/005/628/delicious-kinder-joy-chocolate-874.jpg" },
+
+{ id: 37, cat: "Chocolates", brand: "Ferrero Rocher", name: "Ferrero Rocher (4 pcs)", price: 220, oldPrice: 260, img: "https://deq64r0ss2hgl.cloudfront.net/images/opt/products_gallery_images/ferrero-rocher-premium-4pcs-50g-40502752634910.jpg?v=1509" },
+
+{ id: 38, cat: "Chocolates", brand: "Amul", name: "Dark Chocolate (150g)", price: 110, oldPrice: 130, img: "https://rukminim2.flixcart.com/image/480/480/xif0q/chocolate/d/i/p/300-dark-chocolate-150g-pack-of-2-2-amul-original-imagut7yzrevbnfh.jpeg?q=90" },
+
+{ id: 39, cat: "Chocolates", brand: "Bournville", name: "Rich Cocoa Dark Chocolate", price: 140, oldPrice: 160, img: "https://m.media-amazon.com/images/I/6161xUQm+9L._AC_UF894,1000_QL80_.jpg" },
+
+        // --- NEW DAILY USE ITEMS ---
+
+        // Staples (Atta, Rice, Dal, Oil)
+        { id: 7, cat: "Staples", brand: "Fortune", name: "Chakki Fresh Atta (5kg)", price: 215, oldPrice: 250, img: "https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/NI_CATALOG/IMAGES/CIW/2025/12/22/1e8f4348-dcd8-4eec-9886-867adecd2bda_3727_1.png" },
+        { id: 8, cat: "Staples", brand: "Daawat", name: "Basmati Rice (1kg)", price: 99, oldPrice: 140, img: "https://www.quickpantry.in/cdn/shop/products/daawat-basmati-rice-rozana-gold-1-kg-quick-pantry.jpg?v=1710538790" },
+        { id: 9, cat: "Staples", brand: "Tata", name: "Premium Salt (1kg)", price: 28, oldPrice: 30, img: "https://www.bbassets.com/media/uploads/p/xl/241600_9-tata-salt-iodized.jpg" },
+        { id: 10, cat: "Staples", brand: "Fortune", name: "Mustard Oil (1L)", price: 145, oldPrice: 175, img: "https://m.media-amazon.com/images/I/816NQIGpHiL.jpg" },
+        { id: 11, cat: "Staples", brand: "Tata Sampann", name: "Toor Dal (1kg)", price: 160, oldPrice: 190, img: "https://www.bbassets.com/media/uploads/p/l/40000291_14-tata-sampann-unpolished-toor-dalarhar-dal.jpg" },
+        
+
+{ id: 12, cat: "Staples", brand: "Fortune", name: "Sunflower Oil (1L)", price: 140, oldPrice: 170, img: "https://rukminim2.flixcart.com/image/480/640/kuh9yfk0/edible-oil/i/l/d/1-sunflower-oil-1ltr-1-pouch-sunflower-oil-fortune-original-imag7hbgfwfpmdpy.jpeg?q=90" },
+
+{ id: 13, cat: "Staples", brand: "Aashirvaad", name: "Whole Wheat Atta (5kg)", price: 230, oldPrice: 260, img: "https://www.bbassets.com/media/uploads/p/xl/126903_12-aashirvaad-atta-whole-wheat.jpg" },
+
+{ id: 14, cat: "Staples", brand: "India Gate", name: "Classic Basmati Rice (5kg)", price: 520, oldPrice: 600, img: "https://desigros.com/cdn/shop/files/india_gate_classic_basmati_rice_5_kg_bag_1.webp?v=1761379361&width=1000" },
+
+
+{ id: 15, cat: "Staples", brand: "Tata Sampann", name: "Moong Dal (1kg)", price: 150, oldPrice: 180, img: "https://m.media-amazon.com/images/I/71e96DdcB2L.jpg" },
+
+{ id: 16, cat: "Staples", brand: "Tata Sampann", name: "Chana Dal (1kg)", price: 95, oldPrice: 120, img: "https://m.media-amazon.com/images/I/61NZt0SHUgL.jpg" },
+
+{ id: 17, cat: "Staples", brand: "Fortune", name: "Refined Oil (1L)", price: 135, oldPrice: 160, img: "https://m.media-amazon.com/images/I/51GyUUKe-0L.jpg" },
+
+{ id: 18, cat: "Staples", brand: "24 Mantra", name: "Organic Sugar (1kg)", price: 60, oldPrice: 75, img: "https://www.bbassets.com/media/uploads/p/l/40012925_7-24-mantra-organic-sugar.jpg" },
+
+{ id: 19, cat: "Staples", brand: "Tata", name: "Rock Salt (Sendha Namak 1kg)", price: 50, oldPrice: 65, img: "https://m.media-amazon.com/images/I/614kL5ApmPL._AC_UF894,1000_QL80_.jpg" },
+
+       
+        // Personal Care & Household--
+
+{ id: 12, cat: "Care", brand: "Dettol", name: "Original Soap (75g)", price: 35, oldPrice: 40, img: "https://www.bbassets.com/media/uploads/p/l/100008536_21-dettol-original-bathing-soap-bar-with-76-tfm-provides-germ-protection.jpg" },
+
+{ id: 13, cat: "Care", brand: "Colgate", name: "MaxFresh Toothpaste", price: 92, oldPrice: 110, img: "https://www.bbassets.com/media/uploads/p/l/263936_26-colgate-maxfresh-toothpaste-gel-anticavity-spicy-fresh.jpg" },
+
+{ id: 14, cat: "Care", brand: "Surf Excel", name: "Easy Wash Powder (1kg)", price: 125, oldPrice: 150, img: "https://besuresainikcanteen.com/wp-content/uploads/2024/05/media_000000000000017756_1_Default-WF_Default-Product.jpg" },
+
+{ id: 15, cat: "Care", brand: "Head & Shoulders", name: "Anti-Dandruff Shampoo", price: 185, oldPrice: 210, img: "https://www.bbassets.com/media/uploads/p/l/267964_11-head-shoulders-anti-dandruff-shampoo-cool-menthol.jpg" },
+
+// Soaps
+{ id: 16, cat: "Care", brand: "Lux", name: "Soft Touch Soap (100g)", price: 45, oldPrice: 55, img: "https://velocitymarketplace.in/wp-content/uploads/2024/08/lux-posted.png" },
+
+{ id: 17, cat: "Care", brand: "Dove", name: "Beauty Cream Bar (75g)", price: 60, oldPrice: 70, img: "https://m.media-amazon.com/images/I/61JzpV33b3L._AC_UF1000,1000_QL80_.jpg" },
+
+{ id: 18, cat: "Care", brand: "Pears", name: "Pure & Gentle Soap (75g)", price: 55, oldPrice: 65, img: "https://m.media-amazon.com/images/I/61sbp+Zo8YL._AC_UF1000,1000_QL80_.jpg" },
+
+// Shampoos
+{ id: 19, cat: "Care", brand: "Clinic Plus", name: "Strong & Long Shampoo", price: 120, oldPrice: 140, img: "https://rukminim2.flixcart.com/image/480/480/xif0q/shampoo/d/m/g/1-strong-and-long-health-hair-shampoo-1-liter-clinic-plus-original-imagyz48yh6eegex.jpeg?q=90" },
+
+{ id: 20, cat: "Care", brand: "Pantene", name: "Hair Fall Control Shampoo", price: 180, oldPrice: 210, img: "https://m.media-amazon.com/images/I/41NVRvdo++L._AC_UF1000,1000_QL80_.jpg" },
+
+{ id: 21, cat: "Care", brand: "Sunsilk", name: "Black Shine Shampoo", price: 150, oldPrice: 180, img: "https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/ciw/2026/2/11/5472b448-3b66-4876-a6b4-35fbd54b6e55_ZYZU54LF3H_MN_11022026.png" },
+
+// Other Essentials
+{ id: 22, cat: "Care", brand: "Vaseline", name: "Petroleum Jelly (100ml)", price: 85, oldPrice: 100, img: "https://m.media-amazon.com/images/I/71-Xed7rRlL._AC_UF1000,1000_QL80_.jpg" },
+
+{ id: 23, cat: "Care", brand: "Nivea", name: "Body Lotion (200ml)", price: 210, oldPrice: 250, img: "https://m.media-amazon.com/images/I/511pobO7UrL.jpg" },
+
+{ id: 24, cat: "Care", brand: "Harpic", name: "Toilet Cleaner (1L)", price: 180, oldPrice: 210, img: "https://www.mystore.in/s/62ea2c599d1398fa16dbae0a/67b3613a75b96142190330ba/8901396173687_1.jpg" },
+
+{ id: 25, cat: "Care", brand: "Lizol", name: "Floor Cleaner (1L)", price: 160, oldPrice: 190, img: "https://www.bbassets.com/media/uploads/p/l/263839_17-lizol-disinfectant-surface-floor-cleaner-liquid-citrus-kills-999-germs.jpg" },
+
+{ id: 26, cat: "Care", brand: "Godrej", name: "Handwash Liquid (250ml)", price: 75, oldPrice: 90, img: "https://m.media-amazon.com/images/I/7167lT4tdFL.jpg" },
+        ];
+
+    let cart = [], wishlist = [], currentSlide = 0;
+
+/* ================= SLIDER ================= */
+function moveSlider() {
+    const slider = document.getElementById('mainSlider');
+    currentSlide = (currentSlide + 1) % 4;
+    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+}
+setInterval(moveSlider, 4000);
+
+/* ================= RENDER PRODUCTS ================= */
+function render(data = products) {
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = data.map(p => `
+        <div class="card">
+            <span class="wishlist-icon ${wishlist.includes(p.id) ? 'active' : ''}" onclick="toggleWishlist(${p.id})">❤</span>
+            <img src="${p.img}">
+            <div class="card-body">
+                <div class="brand">${p.brand}</div>
+                <div class="name">${p.name}</div>
+                <div class="price">₹${p.price} <span class="old-price">₹${p.oldPrice}</span></div><br>
+                <button class="btn-buy" onclick="addToCart(${p.id})">ADD TO CART</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ================= FILTER ================= */
+function filterData(cat) {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    render(cat === 'All' ? products : products.filter(p => p.cat === cat));
+}
+
+/* ================= SIDEBAR ================= */
+function openSidebar(type) {
+    closeAll();
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById(type + '-sidebar').classList.add('active');
+}
+
+function closeAll() {
+    document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('active'));
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('payment-modal').style.display = 'none';
+}
+
+/* ================= ADD TO CART ================= */
+function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    const existing = cart.find(item => item.id === id);
+
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        cart.push({ ...product, qty: 1 });
+    }
+
+    updateUI();
+    openSidebar('cart');
+}
+
+/* ================= QUANTITY ================= */
+function increaseQty(index) {
+    cart[index].qty++;
+    updateUI();
+}
+
+function decreaseQty(index) {
+    if (cart[index].qty > 1) {
+        cart[index].qty--;
+    } else {
+        cart.splice(index, 1);
+    }
+    updateUI();
+}
+
+/* ================= REMOVE ITEM ================= */
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateUI();
+}
+
+/* ================= WISHLIST ================= */
+function toggleWishlist(id) {
+    wishlist = wishlist.includes(id)
+        ? wishlist.filter(i => i !== id)
+        : [...wishlist, id];
+
+    updateUI();
+    render();
+}
+
+/* ================= UPDATE UI ================= */
+function updateUI() {
+    document.getElementById('cart-count').innerText =
+        cart.reduce((sum, item) => sum + item.qty, 0);
+
+    document.getElementById('wish-count').innerText = wishlist.length;
+
+    let total = 0;
+
+    document.getElementById('cart-items').innerHTML = cart.map((item, index) => {
+        total += item.price * item.qty;
+
+        return `
+        <div class="cart-item" style="border-bottom:1px solid #ddd; padding:10px 0;">
+            
+            <div style="display:flex; justify-content:space-between;">
+                <span>${item.name}</span>
+                <b>₹${item.price}</b>
+            </div>
+
+            <div class="qty-box" style="margin:8px 0;">
+                <button onclick="decreaseQty(${index})">-</button>
+                <span style="margin:0 10px;">${item.qty}</span>
+                <button onclick="increaseQty(${index})">+</button>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Subtotal: ₹${item.price * item.qty}</span>
+                <button onclick="removeFromCart(${index})" style="background:red; color:#fff; border:none; padding:4px 8px; cursor:pointer;">
+                    Remove
+                </button>
+            </div>
+
+        </div>
+        `;
+    }).join('');
+
+    document.getElementById('total-price').innerText = total;
+
+    /* Wishlist UI */
+    document.getElementById('wishlist-items').innerHTML = wishlist.map(wid => {
+        const p = products.find(x => x.id === wid);
+        return `
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px">
+            <img src="${p.img}" width="40"> <span>${p.name}</span>
+        </div>`;
+    }).join('');
+}
+
+/* ================= PAYMENT ================= */
+function openPayment() {
+    if (cart.length === 0) return alert("Cart is empty!");
+    document.getElementById('payment-modal').style.display = 'block';
+}
+
+function processPayment() {
+    alert("Order Successful! Your fresh groceries will arrive soon 🚚");
+    cart = [];
+    updateUI();
+    closeAll();
+}
+
+/* ================= INIT ================= */
+render();
+</script>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <!-- Brand -->
+        <div class="footer-col">
+            <h2>🌿 SabziMandi Online</h2>
+            <p>Fresh groceries delivered at your doorstep. गुणवत्ता और भरोसा हर दिन!</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Vegetables</a></li>
+                <li><a href="#">Fruits</a></li>
+                <li><a href="#">Dairy</a></li>
+                <li><a href="#">Chocolates</a></li>
+            </ul>
+        </div>
+
+        <!-- Help -->
+        <div class="footer-col">
+            <h3>Customer Support</h3>
+            <ul>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Return Policy</a></li>
+            </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-col">
+            <h3>Contact</h3>
+            <p>📍 Lucknow, India</p>
+            <p>📞 +91 8948277840</p>
+            <p>✉️ rm0983913@gmail.com</p>
+        </div>
+        <!-- Developer -->
+<div class="footer-col">
+    <h3>Developer</h3>
+    <p>👨‍💻 Rajneesh Kumar Mishra</p>
+    <p>Frontend Developer</p>
+
+    <img src="https://github.com/rajneeshmishra1008/My-Portfolio" 
+         alt="QR Code" class="qr-code">
+
+    <p style="font-size:12px; margin-top:5px;">Scan to view Portfolio</p>
+</div>
+
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 🌿 SabziMandi Online | All Rights Reserved</p>
+    </div>
+</footer>
+</body>
+</html>
